@@ -1,0 +1,27 @@
+version: '3'
+services:
+  db:
+    image: postgres:10.3
+    ports:
+      - "5432:5432"
+
+  es:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.2.3
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+
+  web:
+    build: .
+    environment:
+      RACK_ENV: development
+      RAILS_ENV: development
+      ELASTICSEARCH_URL: 'http://es:9200/'
+    command: bin/rails server --port 3000 --binding 0.0.0.0
+    ports:
+      - "3000:3000"
+    links:
+      - db
+      - es
+    volumes:
+      - .:/app/preserve
